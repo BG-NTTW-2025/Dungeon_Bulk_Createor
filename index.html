@@ -166,7 +166,7 @@
             let randStr = getRandomString(10);
             let finalPuzzleName = (basePuzzleName ? basePuzzleName + " " : "") + randStr;
             let finalQuestion = (baseQuestion ? baseQuestion + " " : "") + randStr;
-            let finalAnswer = (baseAnswer ? baseAnswer + " " : "") + randStr;
+            let finalAnswer = (baseAnswer ? baseAnswer + " " : "") + "1";
 
             statusDiv.textContent = `Bezig met verzenden puzzel ${puzzleNum} van 10 (Categorie: ${currentCategory})...`;
 
