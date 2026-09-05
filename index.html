@@ -93,7 +93,7 @@ let { data: designerData } = await supabaseClient
 const currentUsername = designerData ? designerData.username : 'Unknown';		
 
         for (let i = 0; i < categoriesList.length; i++) {
-            let puzzleNum = i + 11;
+            let puzzleNum = i + 21;
             let currentCategory = categoriesList[i];
             
             statusDiv.textContent = `Bezig met verzenden puzzel ${puzzleNum} van 10 (Categorie: ${currentCategory})...`;
@@ -190,7 +190,7 @@ const currentUsername = designerData ? designerData.username : 'Unknown';
                         designer_id: designerId,
 						designer_name: currentUsername,
                         puzzle_name: String(puzzleNum)+ " (Parent)",
-                        question: String(puzzleNum)+ " (A)",
+                        question: String(puzzleNum),
                         answer: String(puzzleNum),
                         category: currentCategory,
                         google_timer: 0,
@@ -211,7 +211,7 @@ const currentUsername = designerData ? designerData.username : 'Unknown';
                         designer_id: designerId,
 						designer_name: currentUsername,
                         puzzle_name: String(puzzleNum) + " (Child)",
-                        question: String(puzzleNum)+ " (A)",
+                        question: String(puzzleNum),
                         answer: String(puzzleNum),
                         category: currentCategory,
                         google_timer: 0,
