@@ -23,14 +23,14 @@
     <label>Designer ID:</label>
     <input type="text" id="designerIdInput" value="bb7d2ddf-88be-4ba7-8578-91dd6cc768d0">
 
-    <label>Puzzel Naam (Basis):</label>
-    <input type="text" id="puzzleNameInput" value="Mijn Nieuwe Puzzel">
+    <label>Puzzel Naam Voorvoegsel (Optioneel):</label>
+    <input type="text" id="puzzleNameInput" value="Puzzel">
 
-    <label>Vraag:</label>
-    <input type="text" id="questionInput" value="Wat is de hoofdstad van...?">
+    <label>Vraag Voorvoegsel (Optioneel):</label>
+    <input type="text" id="questionInput" value="Vraag">
 
-    <label>Antwoord:</label>
-    <input type="text" id="answerInput" value="Antwoord hier">
+    <label>Antwoord Voorvoegsel (Optioneel):</label>
+    <input type="text" id="answerInput" value="Antw">
 
     <label>Vertraging tussen zendingen (milisec):</label>
     <input type="number" id="delayInput" value="100">
@@ -51,7 +51,6 @@
         const submitBtn = document.getElementById('submitBtn');
 
         try {
-            // Check of er al een actieve sessie is
             const { data: { session } } = await supabaseClient.auth.getSession();
             
             if (session) {
@@ -63,8 +62,6 @@
                 return;
             }
 
-            // Anders automatisch inloggen
-            // VERVANG 'JOUW_WACHTWOORD_HIER' HIERONDER MET JE ECHTE WACHTWOORD
             const email = "Myopi2022@outlook.com";
             const password = "myopi@2027"; 
 
@@ -105,6 +102,16 @@
         "Nerds"
     ];
 
+    // Helper functie om een willekeurige string van 10 tekens te genereren
+    function getRandomString(length = 10) {
+        const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let result = '';
+        for (let i = 0; i < length; i++) {
+            result += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return result;
+    }
+
     function getOppositeWall(wall) {
         switch (wall) {
             case 'north': return 'south';
@@ -128,8 +135,8 @@
     async function startBulkInject() {
         const designerId = document.getElementById('designerIdInput').value.trim();
         const basePuzzleName = document.getElementById('puzzleNameInput').value.trim();
-        const questionText = document.getElementById('questionInput').value.trim();
-        const answerText = document.getElementById('answerInput').value.trim();
+        const baseQuestion = document.getElementById('questionInput').value.trim();
+        const baseAnswer = document.getElementById('answerInput').value.trim();
         const delay = parseInt(document.getElementById('delayInput').value) || 100;
         const statusDiv = document.getElementById('status');
 
@@ -143,7 +150,6 @@
 
         const directions = ['north', 'south', 'east', 'west'];
 		
-        // Haal de username op voor de designers-tabel
         let { data: designerData } = await supabaseClient
             .from('designers')
             .select('username')
@@ -156,9 +162,14 @@
             let puzzleNum = i + 1;
             let currentCategory = categoriesList[i];
             
+            // Genereer unieke willekeurige strings voor deze categorie-run
+            let randStr = getRandomString(10);
+            let finalPuzzleName = (basePuzzleName ? basePuzzleName + " " : "") + randStr;
+            let finalQuestion = (baseQuestion ? baseQuestion + " " : "") + randStr;
+            let finalAnswer = (baseAnswer ? baseAnswer + " " : "") + randStr;
+
             statusDiv.textContent = `Bezig met verzenden puzzel ${puzzleNum} van 10 (Categorie: ${currentCategory})...`;
 
-            // Haal bestaande kamers op gefilterd op de huidige categorie-labyrint
             let { data: existingPuzzles, error: fetchError } = await supabaseClient
                 .from('puzzle_labyrinth')
                 .select('room_id, wall_side, pos_x, pos_y, category')
@@ -249,9 +260,9 @@
                     {
                         designer_id: designerId,
                         designer_name: currentUsername,
-                        puzzle_name: basePuzzleName + " (" + currentCategory + " - Parent)",
-                        question: questionText,
-                        answer: answerText,
+                        puzzle_name: finalPuzzleName + " (Parent)",
+                        question: finalQuestion,
+                        answer: finalAnswer,
                         category: currentCategory,
                         google_timer: 0,
                         max_reward: 30,
@@ -270,9 +281,9 @@
                     {
                         designer_id: designerId,
                         designer_name: currentUsername,
-                        puzzle_name: basePuzzleName + " (" + currentCategory + " - Child)",
-                        question: questionText,
-                        answer: answerText,
+                        puzzle_name: finalPuzzleName + " (Child)",
+                        question: finalQuestion,
+                        answer: finalAnswer,
                         category: currentCategory,
                         google_timer: 0,
                         max_reward: 30,
@@ -298,7 +309,7 @@
         }
 
         statusDiv.style.color = "#4caf50";
-        statusDiv.textContent = "Klaar! Exact 10 puzzels (1 per categorie) succesvol toegevoegd met je ingevoerde gegevens.";
+        statusDiv.textContent = "Klaar! Exact 10 puzzels (1 per categorie) toegevoegd met unieke willekeurige data.";
     }
 </script>
 
