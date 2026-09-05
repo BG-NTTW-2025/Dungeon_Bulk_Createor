@@ -80,6 +80,15 @@
         statusDiv.textContent = "Bezig met starten...";
 
         const directions = ['north', 'south', 'east', 'west'];
+		
+// Haal de username op voor de designers-tabel
+let { data: designerData } = await supabaseClient
+    .from('designers')
+    .select('username')
+    .eq('id', designerId)
+    .single();
+
+const currentUsername = designerData ? designerData.username : 'Unknown';		
 
         for (let i = 0; i < categoriesList.length; i++) {
             let puzzleNum = i + 1;
@@ -177,7 +186,8 @@
                 .insert([
                     {
                         designer_id: designerId,
-                        puzzle_name: String(puzzleNum),
+						designer_name: currentUsername,
+                        puzzle_name: String(puzzleNum)+ " (Parent)",
                         question: String(puzzleNum),
                         answer: String(puzzleNum),
                         category: currentCategory,
@@ -197,7 +207,8 @@
                     },
                     {
                         designer_id: designerId,
-                        puzzle_name: String(puzzleNum) + " (Target)",
+						designer_name: currentUsername,
+                        puzzle_name: String(puzzleNum) + " (Child)",
                         question: String(puzzleNum),
                         answer: String(puzzleNum),
                         category: currentCategory,
